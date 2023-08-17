@@ -1,13 +1,13 @@
 import six
 
 from packaging import version
+from urllib.parse import quote
 
 import django
 
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject
-from django.utils.http import urlquote
 
 from .conf import settings
 from .utils import import_attribute
@@ -135,7 +135,7 @@ class QueuedStorage(object):
         :type name: str
         :rtype: str
         """
-        return '%s_%s' % (self.cache_prefix, urlquote(name))
+        return '%s_%s' % (self.cache_prefix, quote(name))
 
     def using_local(self, name):
         """
