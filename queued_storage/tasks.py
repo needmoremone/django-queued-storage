@@ -1,10 +1,7 @@
 from django.core.cache import cache
 
-from celery.task import Task
-try:
-    from celery.utils.log import get_task_logger
-except ImportError:
-    from celery.log import get_task_logger
+from celery import Task
+from celery.utils.log import get_task_logger
 
 
 from .conf import settings
