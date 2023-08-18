@@ -90,7 +90,7 @@ class QueuedStorage(object):
                                          options=self.remote_options)
 
         self.task = self._load_backend(backend=task or self.task,
-                                       handler=import_attribute)
+                                       handler=import_attribute)()
         if delayed is not None:
             self.delayed = delayed
         if cache_prefix is not None:
