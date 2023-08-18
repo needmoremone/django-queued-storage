@@ -4,6 +4,7 @@ from packaging import version
 from urllib.parse import quote
 
 import django
+from celery import Task
 
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -62,8 +63,9 @@ class QueuedStorage(object):
     #: The Celery task class to use to transfer files from the local
     #: to the remote storage. A dotted path (e.g.
     #: ``'queued_storage.tasks.Transfer'``).
-    task = 'queued_storage.tasks.Transfer'
-
+    # Must be entered so its definitely been registered:
+    task: Task
+    
     #: If set to ``True`` the backend will *not* transfer files to the remote
     #: location automatically, but instead requires manual intervention by the
     #: user with the :meth:`~queued_storage.backends.QueuedStorage.transfer`
@@ -75,9 +77,9 @@ class QueuedStorage(object):
     #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_CACHE_PREFIX`)
     cache_prefix = settings.QUEUED_STORAGE_CACHE_PREFIX
 
-    def __init__(self, local=None, remote=None,
+    def __init__(self, task: Task, local=None, remote=None,
                  local_options=None, remote_options=None,
-                 cache_prefix=None, delayed=None, task=None):
+                 cache_prefix=None, delayed=None):
 
         self.local_path = local or self.local
         self.local_options = local_options or self.local_options or {}
@@ -89,8 +91,8 @@ class QueuedStorage(object):
         self.remote = self._load_backend(backend=self.remote_path,
                                          options=self.remote_options)
 
-        self.task = self._load_backend(backend=task or self.task,
-                                       handler=import_attribute)()
+        self.task = task
+        
         if delayed is not None:
             self.delayed = delayed
         if cache_prefix is not None:
