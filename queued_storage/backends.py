@@ -77,9 +77,9 @@ class QueuedStorage(object):
     #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_CACHE_PREFIX`)
     cache_prefix = settings.QUEUED_STORAGE_CACHE_PREFIX
 
-    def __init__(self, task: Task, local=None, remote=None,
+    def __init__(self, local=None, remote=None,
                  local_options=None, remote_options=None,
-                 cache_prefix=None, delayed=None):
+                 cache_prefix=None, delayed=None, task: Task | None = None):
 
         self.local_path = local or self.local
         self.local_options = local_options or self.local_options or {}
@@ -91,6 +91,7 @@ class QueuedStorage(object):
         self.remote = self._load_backend(backend=self.remote_path,
                                          options=self.remote_options)
 
+        assert task is not None, "Task must be set"
         self.task = task
         
         if delayed is not None:
